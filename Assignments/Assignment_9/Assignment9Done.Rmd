@@ -1,0 +1,79 @@
+---
+title: "Assignment9Done"
+author: "EthanWilsher"
+date: "2023-03-23"
+output: html_document
+---
+
+```{r setup, include=FALSE, Echo = TRUE, warning= FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+First I did some set up so that coding and working with data would be easier.
+```{r}
+library(tidyverse)
+library(easystats)
+library(modelr)
+```
+
+Then I had to read in the data and clean it up because the admitted yes or no was not true or false. It also turned out that I had to factor the rank of schools so they could be grouped.
+```{r}
+df <- read_csv("../../Data/GradSchool_Admissions.csv")
+
+clean <- df %>% mutate(admit = as.logical(admit), 
+                       rank = factor(rank, levels = c(1,2,3,4)))
+clean
+```
+
+I then made some models to see if there was any relations and so that I had a wide range to test from.
+```{r}
+mod1 <- glm(data = clean,
+            formula = admit ~ gpa,
+            family = "binomial")
+summary(mod1)
+
+mod2 <- glm(data = clean,
+            formula = admit ~ gpa + rank + gre,
+            family = "binomial")
+
+summary(mod2)
+
+mod3 <- glm(data = clean,
+            formula = admit ~ gpa * rank * gre,
+            family = "binomial")
+summary(mod3)
+
+mod4 <- glm(data = clean,
+            formula = admit ~ rank * gre,
+            family = "binomial")
+summary(mod4)
+
+mod5 <- glm(data = clean,
+            formula = admit ~ gpa * gre,
+            family = "binomial")
+summary(mod5)
+```
+I then used the compare performance command and then plotted it to have a visual of which one is best and I settled on model 2
+```{r}
+compare_performance(mod1,mod2,mod3,mod4,mod5)
+compare_performance(mod1,mod2,mod3,mod4,mod5) %>% plot()
+```
+
+Then I added some predictions using the second model.
+```{r}
+clean <- add_predictions(clean, mod2, type = "response")
+```
+
+Using the predictions I then graphhed the relation between gpa and admittance and the gre and admittance with the rank of schools categorized.
+
+```{r}
+ clean %>% 
+  ggplot(aes(x=gpa, y = pred,color = rank, group = rank)) +
+  geom_smooth() + labs(title = "GPA Score Prediction",
+                       caption = paste0("GPA cooefficient = "))
+
+clean %>% 
+  ggplot(aes(x=gre, y = pred,color = rank, group = rank)) +
+  geom_smooth() + labs(title = "GPA Score Prediction",
+                       caption = paste0("GPA cooefficient = "))
+```
