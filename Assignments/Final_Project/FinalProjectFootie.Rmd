@@ -1,0 +1,108 @@
+---
+title: "Final Project"
+author: "Ethan Wilsher"
+date: "2023-04-06"
+output: html_document
+---
+
+```{r setup, include=FALSE, Echo = TRUE, warning= FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Football Stats Made Easy
+
+In this project I hope to be able to simplify the statistics of football players to a point where those who do not follow the sport can statistically say who the best players are and maybe some of the reasons they perform so well. 
+
+```{r,warning= FALSE, message=FALSE}
+library(tidyverse)
+library(easystats)
+library(modelr)
+library(ggplot2)
+library(janitor)
+
+df <- read_csv("./england-premier-league-players-2018-to-2019-stats.csv") %>% clean_names()
+
+#I'm going to clean this to get rid of NA columns
+
+```
+
+## Plots
+
+I fiddled around with the data to see things like what teams have the most goals or
+things like what positions had more or less playtime. Also small things like which teams
+have scored the most goals. 
+
+```{r,warning= FALSE, message=FALSE}
+names(df)
+
+df %>% 
+  ggplot(aes(x=age, y=goals_overall)) + 
+  geom_smooth()
+
+df %>% 
+  ggplot(aes(x=goals_overall, y=current_club)) +
+  geom_line()
+
+df %>% 
+  ggplot(aes(x=birthday_gmt)) +
+  geom_density()
+
+
+```
+
+## Models
+
+In this section I decided to try looking at some models to see if there was correlations
+between things such as clubs, age, or where a player is from. 
+
+```{r,warning= FALSE, message=FALSE}
+mod1 <- glm(data = df,
+            formula = goals_overall ~ minutes_played_overall + appearances_overall + yellow_cards_overall + red_cards_overall)
+
+summary(mod1)
+rmse(mod1)
+sqrt(median(residuals(mod1)^2))
+
+mod2 <- glm(data = df,
+            formula = goals_home ~ minutes_played_home + appearances_home)
+summary(mod2)
+
+mod3 <- glm(data = df,
+            formula = goals_away ~ minutes_played_away + appearances_away)
+summary(mod3)
+
+mod4 <- glm(data = df,
+            formula = goals_overall ~ age * minutes_played_overall * appearances_overall * yellow_cards_overall * red_cards_overall )
+
+summary(mod4)
+
+mod5 <- glm(data = df,
+            formula = goals_home ~ age * minutes_played_home * appearances_home)
+summary(mod5)
+
+mod6 <- glm(data = df,
+            formula = goals_away ~ age * minutes_played_away * appearances_away)
+summary(mod6)
+
+mod7 <- glm(data = df,
+            formula = goals_overall ~ position + current_club + nationality)
+summary(mod7)
+
+```
+
+## Analysis
+
+This is where im going to analze the models to see which are performing the best.
+
+```{r,warning= FALSE, message=FALSE}
+
+compare_performance(mod1,mod2,mod3,mod4,mod5,mod6,mod7)
+compare_performance(mod1,mod2,mod3,mod4,mod5,mod6,mod7) %>% plot()
+
+```
+
+
+## Takeaway
+
+
+
