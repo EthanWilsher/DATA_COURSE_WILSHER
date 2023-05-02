@@ -2,7 +2,12 @@
 title: "Final Project"
 author: "Ethan Wilsher"
 date: "2023-04-06"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    
 ---
 
 ```{r setup, include=FALSE, Echo = TRUE, warning= FALSE, message=FALSE}
@@ -10,6 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Football Stats Made Easy
+
+***
 
 In this project I hope to be able to simplify the statistics of football players to a point where those who do not follow the sport can statistically say who the best players are and maybe some of the reasons they perform so well. 
 
@@ -19,90 +26,460 @@ library(easystats)
 library(modelr)
 library(ggplot2)
 library(janitor)
+library(dplyr)
+library(knitr)
+library(magrittr)
+library(kableExtra)
+library(h2o)
+
 
 df <- read_csv("./england-premier-league-players-2018-to-2019-stats.csv") %>% clean_names()
 
-#I'm going to clean this to get rid of NA columns
+dfMatches <- read_csv("./england-premier-league-matches-2018-to-2019-stats.csv") %>% clean_names()
+
+dfTeams <- read_csv("./england-premier-league-teams-2018-to-2019-stats.csv") %>% clean_names()
 
 ```
 
-## Plots
+# {.tabset}
 
-I fiddled around with the data to see things like what teams have the most goals or
-things like what positions had more or less playtime. Also small things like which teams
-have scored the most goals. 
+## 2018/2019 Premier League Teams
 
-```{r,warning= FALSE, message=FALSE}
-names(df)
+These are the teams that participated in the Premier League in the 2018 to 2019 season. The Premier league is the best 
+league based in the united kingdom. To make it to the premier league a team must be top 3 in the league in which you are then promoted
+to the next league and the 3 lowest teams in the league above then get demoted. 
 
-df %>% 
-  ggplot(aes(x=age, y=goals_overall)) + 
-  geom_smooth()
+### AFC Bournemouth
 
-df %>% 
-  ggplot(aes(x=goals_overall, y=current_club)) +
-  geom_line()
+```{r}
+knitr::include_graphics(path = "AFC.png")
 
-df %>% 
-  ggplot(aes(x=birthday_gmt)) +
-  geom_density()
+AFC <- filter(df, current_club == "AFC Bournemouth") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
 
+kable(AFC, format = "html" ,caption = "Stats for Football Team AFC Bournemouth",align = "cccccccccccccccc") %>% kable_styling()
 
 ```
 
-## Models
+### Arsenal
 
-In this section I decided to try looking at some models to see if there was correlations
-between things such as clubs, age, or where a player is from. 
+```{r}
+knitr::include_graphics(path = "./Arsenal.png")
+
+ARS <- filter(df, current_club == "Arsenal") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(ARS, format = "html" ,caption = "Stats for Football Team Arsenal",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Brighton & Hove Albion
+
+```{r}
+knitr::include_graphics(path = "./Brighton&HoveAlbion.png")
+
+BHA <- filter(df, current_club == "Brighton & Hove Albion") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(BHA, format = "html" ,caption = "Stats for Football Team Brighton & Hove Albion",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Burnley
+
+```{r}
+knitr::include_graphics(path = "./Burnley.png")
+
+BNL <- filter(df, current_club == "Burnley") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(BNL, format = "html" ,caption = "Stats for Football Team Burnley",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Cardiff City
+
+```{r}
+knitr::include_graphics(path = "./CardiffCity.png")
+
+CFC <- filter(df, current_club == "Cardiff City") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(CFC, format = "html" ,caption = "Stats for Football Team Cardiff City",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Chelsea
+
+```{r}
+knitr::include_graphics(path = "./Chelsea.png")
+
+CHS <- filter(df, current_club == "Chelsea") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(CHS, format = "html" ,caption = "Stats for Football Team Chelsea",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Crystal Palace
+
+```{r}
+knitr::include_graphics(path = "./CrystalPalace.png")
+
+CRP <- filter(df, current_club == "Crystal Palace") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(CRP, format = "html" ,caption = "Stats for Football Team Crystal Palace",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Everton
+
+```{r}
+knitr::include_graphics(path = "./Everton.png")
+
+EVN <- filter(df, current_club == "Everton") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(EVN, format = "html" ,caption = "Stats for Football Team Everton",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Fulham
+
+```{r}
+knitr::include_graphics(path = "./Fulham.png")
+
+FLM <- filter(df, current_club == "Fulham") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(FLM, format = "html" ,caption = "Stats for Football Team Fulham",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Huddersfield Town
+
+```{r}
+knitr::include_graphics(path = "./Huddersfield_Town.png")
+
+HFT <- filter(df, current_club == "Huddersfield Town") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(HFT, format = "html" ,caption = "Stats for Football Team Huddersfield Town",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Leicester City
+
+```{r}
+knitr::include_graphics(path = "./Leicester_City.png")
+
+LSC <- filter(df, current_club == "Leicester City") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(LSC, format = "html" ,caption = "Stats for Football Team Leicester City",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Liverpool
+
+```{r}
+knitr::include_graphics(path = "./Liverpool_FC.png")
+
+LVP <- filter(df, current_club == "Liverpool") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(LVP, format = "html" ,caption = "Stats for Football Team Liverpool ",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Manchester City
+
+```{r}
+knitr::include_graphics(path = "./Manchester_City.png")
+
+MCC <- filter(df, current_club == "Manchester City") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(MCC, format = "html" ,caption = "Stats for Football Team Manchester City",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Manchester United
+
+```{r}
+knitr::include_graphics(path = "./Manchester_United.png")
+
+MCU <- filter(df, current_club == "Manchester United") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(MCU, format = "html" ,caption = "Stats for Football Team Manchester United",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Newcastle United
+
+```{r}
+knitr::include_graphics(path = "./Newcastle_United.png")
+
+NCU <- filter(df, current_club == "Newcastle United") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(NCU, format = "html" ,caption = "Stats for Football Team Newcastle United",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Southampton
+
+```{r}
+knitr::include_graphics(path = "./Southampton.png")
+
+SHN <- filter(df, current_club == "Southampton") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(SHN, format = "html" ,caption = "Stats for Football Team Southampton",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Tottenham Hotspur
+
+```{r}
+knitr::include_graphics(path = "./Tottenham_Hotspur.png")
+
+THR <- filter(df, current_club == "Tottenham Hotspur") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(THR, format = "html" ,caption = "Stats for Football Team Tottenham Hotspur",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Watford
+
+```{r}
+knitr::include_graphics(path = "./watford-fc-logo-png-transparent.png")
+
+WFD <- filter(df, current_club == "Watford") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(WFD, format = "html" ,caption = "Stats for Football Team Watford",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### West Ham United
+
+```{r}
+knitr::include_graphics(path = "./West_Ham.png")
+
+WHU <- filter(df, current_club == "West Ham United") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(WHU, format = "html" ,caption = "Stats for Football Team West Ham United",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+### Wolverhampton Wanderers
+
+```{r}
+knitr::include_graphics(path = "./Wolverhampton.png")
+
+WHW <- filter(df, current_club == "Wolverhampton Wanderers") %>% select(c('full_name','age','birthday_gmt','position', 'minutes_played_overall','nationality','appearances_overall','goals_overall','assists_overall','penalty_goals','penalty_misses','clean_sheets_overall','conceded_overall','yellow_cards_overall','red_cards_overall','goals_per_90_overall'))
+
+kable(WHW, format = "html" ,caption = "Stats for Football Team Wolverhampton Wanderers",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+## Best Forward
+
+A forward is praised by their ability to show up, get goals, and work with those around them to get goals.
+
+```{r}
+Forward <- filter(df, rank_in_league_top_attackers != -1) %>% 
+  select(c('full_name','goals_overall','assists_overall','position','current_club','age','birthday_gmt', 'rank_in_league_top_attackers', 'appearances_overall' )) 
+
+ForwardClean <- Forward[order(Forward$rank_in_league_top_attackers),]
+
+kable(ForwardClean, format = "html" , caption = "Top league Forwards",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+
+## Best Midfielder
+
+A midfielders job is to make sure that they are an open to passing, assisting people in getting their goals, 
+and making sure the ball stays on the attack.
+
+```{r}
+Mid <- filter(df, rank_in_league_top_midfielders != -1) %>% 
+  select(c('full_name','assists_overall','position','current_club','age','birthday_gmt', 'rank_in_league_top_midfielders', 'appearances_overall' )) 
+
+MidClean <- Mid[order(Mid$rank_in_league_top_midfielders),]
+
+kable(MidClean, format = "html" , caption = "Top league Midfielders",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+
+## Best Defender
+
+A defenders main job is in its name they are the front line between the strikers and the goalie so they must
+do all in their power to make sure the ball does not get past them. If they are able to do this they can get a clean sheet
+meaning no balls get scored on them.
+
+```{r}
+Defend <- filter(df, rank_in_league_top_defenders != -1) %>% 
+  select(c('full_name','clean_sheets_overall','position','current_club','age','birthday_gmt', 'rank_in_league_top_defenders', 'appearances_overall' )) 
+
+DefendClean <- Defend[order(Defend$rank_in_league_top_defenders),]
+
+kable(DefendClean, format = "html" , caption = "Top league Defenders",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+## Best Scorer
+
+A Scorer can be anyone as long as they shoot their shot and get it in they rank. These rankings in this section specifically focus on 
+who is the best in their respective club (team).
+
+```{r}
+
+Scorer <- filter(df, rank_in_club_top_scorer != -1) %>% 
+  select(c('full_name','goals_overall','assists_overall','position','current_club','age','birthday_gmt', 'rank_in_club_top_scorer', 'appearances_overall' )) 
+
+ScorerClean <- Scorer[order(Scorer$rank_in_club_top_scorer,-Scorer$goals_overall),]
+
+kable(ScorerClean, format = "html" , caption = "Top league Scorer",align = "cccccccccccccccc") %>% kable_styling()
+
+
+```  
+
+
+## Best Goalie
+
+A Goalie much like the defender is the last line of defence against the ball. The clean sheets in the end all rely on them.
+
+```{r}
+
+Goalie <- filter(df, position == "Goalkeeper") %>% 
+  select(c('full_name','clean_sheets_overall','position','current_club','age','birthday_gmt', 'appearances_overall' ))
+
+GoalieClean <- Goalie[order(-Goalie$clean_sheets_overall),]
+
+kable(GoalieClean, format = "html" , caption = "Top league Goalies",align = "cccccccccccccccc") %>% kable_styling()
+
+```
+
+
+## Winning Team
+
+### League Rankings
+
+This graph shows the winning team of the league and later on shows the goals they scored giving more context as to why they were
+ranked this way.
+
+```{r}
+dfTeams %>% 
+  ggplot(aes(x= reorder(common_name,+league_position) ,y= league_position )) +
+  geom_col() + theme(axis.text.x = element_text(angle = 90)) + labs(x = "Club Name",
+                                                                    y = "League Position")
+```
+
+### League Ranking Stats
+
+```{r}
+dfWin <- filter(dfTeams) %>% select(c('common_name', 'league_position','performance_rank','goals_scored','goals_conceded',
+                                     'goal_difference','matches_played', 'wins' , 'draws', 
+                                     'losses', 'points_per_game'  )) 
+
+winClean <- dfWin[order(dfWin$league_position),]
+
+kable(winClean, format = "html" , caption = "Team Performance",align = "ccccccccccc") %>% kable_styling()
+```
+
+### Goal Difference by League Position
+
+```{r}
+dfTeams %>% 
+  ggplot(aes(x= league_position ,y= goal_difference, fill = common_name)) +
+  geom_col()
+```
+
+### Goals Overall By League Position
+
+```{r}
+dfTeams %>% 
+  ggplot(aes(x= league_position ,y= goals_scored, fill = common_name)) +
+  geom_col()
+```
+
+
+## Who's Gonna Win?
+
+This section is the most special to me and I think a very interesting part of statistics and football.
+This is a machine learning program that in theory should be able to predict who should win a game. This is not necessarily 100 percent
+accurate prediction but the main thing is to deter bookies from scamming odds.
+
+```{r}
+
+H_df<-dfMatches%>%select(-date_gmt, -away_team_name)%>%
+      group_by(status, home_team_name)%>%arrange(game_week)%>%
+      mutate_at(vars(home_team_goal_count:average_goals_per_match_pre_match), funs(lag))%>%
+      na.omit()%>%
+      mutate_at(vars(home_team_goal_count:average_goals_per_match_pre_match), funs(cummean))%>%
+      select(-away_ppg)%>%ungroup()
+
+colnames(H_df)<-paste("H", colnames(H_df), sep = "_")
+
+A_df<-dfMatches%>%select(-date_gmt, -home_team_name)%>%
+      group_by(status, away_team_name)%>%arrange(game_week)%>%
+      mutate_at(vars(home_team_goal_count:average_goals_per_match_pre_match), funs(lag))%>%
+      na.omit()%>%
+      mutate_at(vars(home_team_goal_count:average_goals_per_match_pre_match), funs(cummean))%>%
+      select(-home_ppg)%>%ungroup()
+
+colnames(A_df)<-paste("A", colnames(A_df), sep = "_")
+
+results_df <- dfMatches %>% select(game_week, status, home_team_name, away_team_name, home_team_goal_count, away_team_goal_count)
+
+final_df <- results_df %>% inner_join(H_df, by=c("home_team_name"="H_home_team_name")) %>% inner_join(A_df, by=c("away_team_name"="A_away_team_name"))
+
+h2o.init()
+
+Train <- final_df%>%filter(game_week <= 38, game_week >= 3)
+
+Test <- final_df%>%filter(game_week >= 20)
+
+Train_h2o <- as.h2o(Train)
+
+Test_h2o <- as.h2o(Test)
+
+
+aml <- h2o.automl(y = 5,  x=6:62, training_frame = Train_h2o,   leaderboard_frame  = Test_h2o, max_runtime_secs = 60)
+
+lb <- aml@leaderboard
+
+pred <- h2o.predict(aml@leader, Test_h2o)
+
+h2o.performance(model = aml@leader, newdata = Train_h2o)
+```
+
+## Am I A Good Player?
+
+In this section there are 4 graphs that show a correlation between how many goals someone should score and how good they should be.
 
 ```{r,warning= FALSE, message=FALSE}
+  
 mod1 <- glm(data = df,
-            formula = goals_overall ~ minutes_played_overall + appearances_overall + yellow_cards_overall + red_cards_overall)
-
-summary(mod1)
-rmse(mod1)
-sqrt(median(residuals(mod1)^2))
+            formula = goals_overall ~ age + current_club + assists_overall + red_cards_overall + minutes_played_overall + clean_sheets_overall)
 
 mod2 <- glm(data = df,
-            formula = goals_home ~ minutes_played_home + appearances_home)
-summary(mod2)
+            formula = goals_overall ~ age * current_club * assists_overall * red_cards_overall * minutes_played_overall * clean_sheets_overall)
 
-mod3 <- glm(data = df,
-            formula = goals_away ~ minutes_played_away + appearances_away)
-summary(mod3)
+compare_performance(mod1,mod2) %>% plot()
 
-mod4 <- glm(data = df,
-            formula = goals_overall ~ age * minutes_played_overall * appearances_overall * yellow_cards_overall * red_cards_overall )
+add_predictions(df, mod2, type = "response") %>% 
+  ggplot(aes(x=age, y= pred)) +
+          geom_smooth() + labs(title = "Age")
 
-summary(mod4)
+add_predictions(df, mod2, type = "response") %>% 
+  ggplot(aes(x=assists_overall, y = pred)) +
+          geom_smooth() + labs(title = "Assists")
 
-mod5 <- glm(data = df,
-            formula = goals_home ~ age * minutes_played_home * appearances_home)
-summary(mod5)
+add_predictions(df, mod2, type = "response") %>% 
+  ggplot(aes(x = minutes_played_overall, y = pred)) +
+          geom_smooth() + labs(title = "Minutes Played")
 
-mod6 <- glm(data = df,
-            formula = goals_away ~ age * minutes_played_away * appearances_away)
-summary(mod6)
-
-mod7 <- glm(data = df,
-            formula = goals_overall ~ position + current_club + nationality)
-summary(mod7)
+add_predictions(df, mod2, type = "response") %>% 
+  ggplot(aes(x=clean_sheets_overall, y = pred)) +
+          geom_smooth() + labs(title = "Clean Sheets")
 
 ```
-
-## Analysis
-
-This is where im going to analze the models to see which are performing the best.
-
-```{r,warning= FALSE, message=FALSE}
-
-compare_performance(mod1,mod2,mod3,mod4,mod5,mod6,mod7)
-compare_performance(mod1,mod2,mod3,mod4,mod5,mod6,mod7) %>% plot()
-
-```
-
 
 ## Takeaway
+
+My take away from studying the data is that it can be really easy to talk about who is at the top of the league and who is scoring the most
+just by reading a table but there is a lot more that the data does not flat out tell you. So my advice is if you want to talk to people about 
+football just watch a bit and ask questions. There also is a lot of things that they do not collect for data but speak of more in passing like passes and time ball was controlled.
 
 
 
